@@ -14,6 +14,14 @@ class SMSUser(models.Model):
     def __str__(self):
         return f"{self.phone_number} {self.credits} credits left"
     
+class Conversation(models.Model):
 
+    STATUS_CHOICES = [
+        ('success', 'Success'),
+        ('failed', 'Failed'),
+        ('flagged', 'Flagged by AI') 
+    ]
+
+    user = models.ForeignKey(SMSUser, on_delete=models.CASCADE)
 
 
