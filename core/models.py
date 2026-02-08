@@ -13,3 +13,7 @@ class SMSUser(models.Model):
 
     def __str__(self):
         return f"{self.phone_number} {self.credits} credits left"
+    
+
+
+
