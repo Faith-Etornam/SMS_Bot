@@ -2,6 +2,10 @@ from django.db import models
 
 # Create your models here.
 class SMSUser(models.Model):
+
+    """
+    Model for Users sending sms to the AI model
+    """
     phone_number = models.CharField(max_length=15, unique=True, db_index=True, help_text="Format +233")
     first_name = models.CharField(max_length=50, blank=True, null=True)
     credits = models.IntegerField(default=10, help_text="Number of free queries remaining")
@@ -41,5 +45,42 @@ class Conversation(models.Model):
 
     class Meta:
         ordering = ['-created_at']
+
+class SystemConfig(models.Model):
+
+    """
+    Singleton model to control the bot settings dynamically from Django Admin.
+    You never need to redeploy code to change the prompt.
+    """
+
+    active = models.BooleanField(default=True, help_text='If False, bot replies with Maintenance Message.')
+
+    maintenance_message = models.CharField(
+        max_length=160, 
+        default="System is currently upgrading. Please try again later.",
+        help_text="Reply sent when Active is False"
+    )
+    system_prompt = models.TextField(
+        default=(
+            "You are an offline SMS assistant. "
+            "1. Answer in under 160 characters. "
+            "2. Be direct. No pleasantries. "
+            "3. If unsure, say 'I do not know'."
+        ),
+        help_text="The instruction given to OpenAI. Changes take effect immediately."
+    )
+    error_message = models.CharField(
+        max_length=160, 
+        default="Error processing request. Try again.",
+        help_text="Reply sent when OpenAI fails"
+    )
+    default_credits = models.IntegerField(default=10, help_text="Credits given to new users")
+
+    class Meta:
+        verbose_name = "System Configuration"
+        verbose_name_plural = "System Configuration"
+
+    def __str__(self):
+        return "System Configuration"
 
 
